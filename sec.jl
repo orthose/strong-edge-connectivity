@@ -70,3 +70,31 @@ function P(g::Matrix{Int}, a::Int, b::Int)::Tuple{Int, Matrix{Int}}
 
     return round(Int, JuMP.objective_value(m)), round.(Int, JuMP.value.(x))
 end
+
+"""
+Calcule la Strong Edge Connectivity (SEC) du graphe g.
+Complexité en n sommets.
+
+:param g: matrice d'adjacence du graphe
+:return: valeur entière de la SEC
+"""
+function sec(g::Matrix{Int})::Int
+    # Vérification des arguments
+    @assert size(g, 1) == size(g, 2)
+    n = size(g, 1)
+
+    # Cas de base si moins de 2 sommets
+    if n < 2 return 0 end
+
+    # Recherche de la SEC minimale
+    res, _ = P(g, 1, 2)
+    for a in 2:n
+        # si a = n alors b = 1
+        # sinon b = a + 1
+        b = (a % n) + 1 
+        p, _ = P(g, a, b)
+        res = min(res, p)
+    end 
+
+    return res 
+end
