@@ -9,7 +9,7 @@ Ce sont les indices des cases valant 1 de la ième ligne.
 :param g: matrice d'adjacence du graphe
 :param i: indice du sommet
 """
-function successors(g::Matrix{Int}, i::Int)
+function successors(g::Matrix{Int}, i::Int)::Vector{Int}
     return findall(x->x==1, g[i,:])
 end
 
@@ -20,7 +20,7 @@ Ce sont les indices des cases valant 1 de la jème colonne.
 :param g: matrice d'adjacence du graphe
 :param j: indice du sommet
 """
-function predecessors(g::Matrix{Int}, j::Int)
+function predecessors(g::Matrix{Int}, j::Int)::Vector{Int}
     return findall(x->x==1, g[:,j])
 end
 
@@ -80,12 +80,13 @@ end
 
 """
 Calcule la Strong Edge Connectivity (SEC) du graphe g.
+Donne la coupe minimale associée sous forme d'une liste d'arcs (i,j).
 Complexité en n sommets.
 
 :param g: matrice d'adjacence du graphe
-:return: valeur entière de la SEC
+:return: valeur entière de la SEC, coupe minimale associée
 """
-function sec(g::Matrix{Int}, verbose::Bool=false)::Int
+function sec(g::Matrix{Int}, verbose::Bool=false)::Tuple{Int, Array{Tuple{Int, Int}}}
     # Vérification des arguments
     @assert size(g, 1) == size(g, 2)
     n = size(g, 1)
@@ -94,15 +95,29 @@ function sec(g::Matrix{Int}, verbose::Bool=false)::Int
     if n < 2 return 0 end
 
     # Recherche de la SEC minimale
-    res, _ = P(g, 1, 2)
-    if verbose println("P(", 1, ",", 2, ")=", res) end
+    pmin, x = P(g, 1, 2)
+    if verbose println("P(", 1, ",", 2, ")=", pmin) end
+    # Le graphe n'est pas fortement connexe
+    if pmin == 0 return pmin, [] end
+    mincut = map(y -> (1, y), successors(x, 1))
+
     for a in 2:n
         # si a = n alors b = 1 sinon b = a + 1
         b = (a % n) + 1 
-        p, _ = P(g, a, b)
-        res = min(res, p)
+        p, x = P(g, a, b)
         if verbose println("P(", a, ",", b, ")=", p) end
+
+        # Mise à jour de la SEC et de la coupe minimales
+        if p < pmin
+            pmin = p
+            # Le graphe n'est pas fortement connexe
+            if pmin == 0
+                mincut = []; break
+            else 
+                mincut = map(y -> (a, y), successors(x, a)) 
+            end
+        end
     end 
 
-    return res 
+    return pmin, mincut
 end

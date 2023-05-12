@@ -6,6 +6,12 @@ sec(G2) = 12
 sec(G3) = 2
 sec(G4) = 2
 sec(G5) = 0
+
+CUT(G1)=[(26, 25)]
+CUT(G2)=[(9, 2), (9, 3), (9, 10), (9, 11), (9, 13), (9, 14), (9, 17), (9, 19), (9, 20), (9, 23), (9, 24), (9, 26)]
+CUT(G3)=[(1, 2), (1, 3)]
+CUT(G4)=[(1, 2), (1, 3)]
+CUT(G5)=[]
 """
 
 using Test
@@ -109,10 +115,14 @@ G5 = [
 @test P(G5, 2, 3)[1] == 1
 @test P(G5, 3, 4)[1] == 0
 
-# Calcul de la SEC
-t = [1, 12, 2, 2, 0]
+# Calcul de la SEC et de la coupe minimale
+st = [1, 12, 2, 2, 0]
+ct = ([(26, 25)],[(9, 2), (9, 3), (9, 10), (9, 11), (9, 13), (9, 14), (9, 17), (9, 19), (9, 20), (9, 23), (9, 24), (9, 26)],
+[(1, 2), (1, 3)], [(1, 2), (1, 3)], [])
 for (i, g) in enumerate((G1,G2,G3,G4,G5)) 
-    s = sec(g, true)
-    @test s == t[i]
-    println("SEC(G", i,")=", s, "\n")
+    s, c = sec(g, true)
+    @test s == st[i]
+    @test c == ct[i]
+    println("SEC(G", i,")=", s)
+    println("CUT(G", i,")=", c, "\n")
 end
