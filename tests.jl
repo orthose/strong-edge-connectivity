@@ -126,3 +126,6 @@ for (i, g) in enumerate((G1,G2,G3,G4,G5))
     println("SEC(G", i,")=", s)
     println("CUT(G", i,")=", c, "\n")
 end
+
+# Bonus: graphe aléatoire
+println("SEC(G100)=", sec(rand_graph(100, 0.3)))

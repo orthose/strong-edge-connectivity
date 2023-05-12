@@ -123,3 +123,14 @@ function sec(g::Matrix{Int}, verbose::Bool=false)::Tuple{Int, Array{Tuple{Int, I
 
     return pmin, mincut
 end
+
+"""
+Génère une matrice carré aléatoire binaire de taille n.
+
+:param n: taille de la matrice
+:param p: probabilité de tirer 1
+:return: matrice aléatoire
+"""
+function rand_graph(n::Int, p::Float64)::Matrix{Int}
+    return rand(n, n) .<= p
+end
