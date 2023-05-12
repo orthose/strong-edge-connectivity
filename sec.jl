@@ -57,11 +57,18 @@ function P(g::Matrix{Int}, a::Int, b::Int)::Tuple{Int, Matrix{Int}}
     @constraint(m, path[i in [i for i in 1:n if !(i in [a,b])]], 
                 sum(x[j,i] for j in predecessors(g, i)) 
                 == sum(x[i,j] for j in successors(g, i)))
+
+    # Aucun flot ne doit entrer dans la source a
+    @constraint(m, sum(x[i,a] for i in predecessors(g, a)) == 0)
+
+    # Aucun flot ne doit sortir de la cible b
+    @constraint(m, sum(x[b,j] for j in successors(g, b)) == 0)
 	
     # On maximise le flot sortant du sommet source 
 	@objective(m, Max, sum(x[a,j] for j in successors(g, a)))
 	
     # Lancement de l'optimisation
+    MOI.set(m, MOI.Silent(), true)
 	optimize!(m)
 	
 	# Une solution a-t-elle été trouvée ?
@@ -78,7 +85,7 @@ Complexité en n sommets.
 :param g: matrice d'adjacence du graphe
 :return: valeur entière de la SEC
 """
-function sec(g::Matrix{Int})::Int
+function sec(g::Matrix{Int}, verbose::Bool=false)::Int
     # Vérification des arguments
     @assert size(g, 1) == size(g, 2)
     n = size(g, 1)
@@ -88,12 +95,13 @@ function sec(g::Matrix{Int})::Int
 
     # Recherche de la SEC minimale
     res, _ = P(g, 1, 2)
+    if verbose println("P(", 1, ",", 2, ")=", res) end
     for a in 2:n
-        # si a = n alors b = 1
-        # sinon b = a + 1
+        # si a = n alors b = 1 sinon b = a + 1
         b = (a % n) + 1 
         p, _ = P(g, a, b)
         res = min(res, p)
+        if verbose println("P(", a, ",", b, ")=", p) end
     end 
 
     return res 
