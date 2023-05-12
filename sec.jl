@@ -26,7 +26,7 @@ end
 
 """
 Programme linéaire résolvant le problème de flot maximal
-du graphe g de la source a à la cible b.
+du graphe g de la source a à la cible b en variables binaires
 
 :param g: matrice d'adjacence du graphe
 :param a: indice de la source
@@ -46,6 +46,8 @@ function P(g::Matrix{Int}, a::Int, b::Int)::Tuple{Int, Matrix{Int}}
 
     # x[i,j] dans [0,1] représente le flot de l'arc (i,j)
     @variable(m, x[i in 1:n, j in 1:n], Bin)
+    # Si on veut généraliser avec des capacités positives
+    #@variable(m, x[i in 1:n, j in 1:n] >= 0) 
 
     # Le flot x[i,j] de l'arc (i,j) ne peut pas excéder 
     # la capacité g[i,j] de l'arête (i,j) du réseau g
