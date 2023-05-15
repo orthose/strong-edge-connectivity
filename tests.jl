@@ -127,5 +127,8 @@ for (i, g) in enumerate((G1,G2,G3,G4,G5))
     println("CUT(G", i,")=", c, "\n")
 end
 
-# Bonus: graphe aléatoire
-println("SEC(G100)=", sec(rand_graph(100, 0.3)))
+# Bonus: graphe aléatoire de 100 sommets (trop long avec 1000)
+G100 = rand_graph(100, 0.3)
+s, c = sec(G100)
+println("SEC(G100)=", s)
+println("CUT(G100)=", c)
